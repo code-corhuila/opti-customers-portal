@@ -48,6 +48,9 @@ export const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
   { value: 'PASSPORT', label: 'Pasaporte' },
 ];
 
+/** Closed EPS catalog; matches the service's own list exactly (Patient.java, EPS_OPTIONS). */
+export const EPS_OPTIONS = ['Nueva EPS', 'EPS Sanitas', 'Pijaos Salud EPSI'] as const;
+
 export const LENS_TYPES: { value: LensType; label: string }[] = [
   { value: 'MONOFOCAL', label: 'Monofocal' },
   { value: 'BIFOCAL', label: 'Bifocal' },

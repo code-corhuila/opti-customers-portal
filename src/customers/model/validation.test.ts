@@ -18,7 +18,7 @@ const validPatient: PatientDraft = {
   firstName: 'Laura Marcela',
   lastName: 'Ortega Ruiz',
   phone: '3104582291',
-  eps: 'Sanitas',
+  eps: 'EPS Sanitas',
 };
 
 const validFormula: FormulaDraft = {
@@ -26,7 +26,7 @@ const validFormula: FormulaDraft = {
   oi: { ...EMPTY_EYE, sphere: '-1.25' },
   pupillaryDistance: '62,5',
   lensType: 'MONOFOCAL',
-  optometristName: 'Dra. Ana Torres',
+  optometristName: 'Ana Torres',
   formulaDate: '2026-09-20',
 };
 
@@ -52,6 +52,23 @@ describe('patient validation', () => {
 
   it('accepts a phone with a leading plus', () => {
     expect(validatePatient({ ...validPatient, phone: '+573104582291' }, TODAY).phone).toBeUndefined();
+  });
+
+  it('rejects numbers and special characters in names, accepts accents and Ñ', () => {
+    expect(validatePatient({ ...validPatient, firstName: 'Juan2' }, TODAY).firstName).toBeDefined();
+    expect(validatePatient({ ...validPatient, lastName: "O'Connor" }, TODAY).lastName).toBeDefined();
+    expect(validatePatient({ ...validPatient, firstName: 'Ñañez Muñóz' }, TODAY).firstName).toBeUndefined();
+  });
+
+  it('only accepts an EPS from the closed catalog', () => {
+    expect(validatePatient({ ...validPatient, eps: 'Compensar' }, TODAY).eps).toBeDefined();
+    expect(validatePatient({ ...validPatient, eps: 'EPS Sanitas' }, TODAY).eps).toBeUndefined();
+  });
+
+  it('rejects a city with digits but accepts letters and an empty one', () => {
+    expect(validatePatient({ ...validPatient, city: 'Neiva2' }, TODAY).city).toBeDefined();
+    expect(validatePatient({ ...validPatient, city: 'Neiva' }, TODAY).city).toBeUndefined();
+    expect(validatePatient({ ...validPatient, city: '' }, TODAY).city).toBeUndefined();
   });
 });
 

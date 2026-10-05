@@ -108,7 +108,8 @@ export function FormulaForm({ shell, patientId, onSaved, onCancel }: {
           onChange={(v) => setDraft((d) => ({ ...d, lensType: v as LensType | '' }))} options={LENS_TYPES}
           error={errors.lensType} />
         <ui.TextField id="optometristName" label="Optómetra" required value={draft.optometristName}
-          onChange={(v) => setDraft((d) => ({ ...d, optometristName: v }))} error={errors.optometristName} maxLength={150} />
+          onChange={(v) => setDraft((d) => ({ ...d, optometristName: v }))} error={errors.optometristName} maxLength={150}
+          hint="Solo letras" />
         <ui.TextField id="formulaDate" label="Fecha del examen" required type="date" value={draft.formulaDate}
           onChange={(v) => setDraft((d) => ({ ...d, formulaDate: v }))} error={errors.formulaDate} />
       </div>
