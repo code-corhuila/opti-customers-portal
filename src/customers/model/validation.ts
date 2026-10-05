@@ -1,4 +1,4 @@
-import type { DocumentType, LensType } from './patient';
+import { EPS_OPTIONS, type DocumentType, type LensType } from './patient';
 
 /**
  * Field rules, the same ones the service enforces (the service is still the authority: what is
@@ -10,6 +10,13 @@ export type Errors = Record<string, string>;
 const DOCUMENT_NUMBER = /^[A-Za-z0-9]{5,20}$/;
 const PHONE = /^\+?[0-9]{7,15}$/;
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+/** Letters (including accents and Ñ) and spaces only: no digits, no punctuation. */
+const NAME = /^[\p{L} ]+$/u;
+
+function isName(value: string, min: number, max: number): boolean {
+  const trimmed = value.trim();
+  return trimmed.length >= min && trimmed.length <= max && NAME.test(trimmed);
+}
 
 export interface PatientDraft {
   documentType: DocumentType | '';
@@ -35,10 +42,6 @@ export const EMPTY_PATIENT: PatientDraft = {
   birthDate: '',
 };
 
-function length(value: string, min: number, max: number): boolean {
-  const size = value.trim().length;
-  return size >= min && size <= max;
-}
 
 export function validateContact(draft: Pick<PatientDraft, 'phone' | 'email' | 'eps' | 'city'>): Errors {
   const errors: Errors = {};
@@ -48,11 +51,11 @@ export function validateContact(draft: Pick<PatientDraft, 'phone' | 'email' | 'e
   if (draft.email.trim() && (draft.email.trim().length > 160 || !EMAIL.test(draft.email.trim()))) {
     errors.email = 'Escribe un correo válido';
   }
-  if (!length(draft.eps, 2, 80)) {
-    errors.eps = 'La EPS es obligatoria (2 a 80 caracteres)';
+  if (!(EPS_OPTIONS as readonly string[]).includes(draft.eps.trim())) {
+    errors.eps = 'Elige una EPS de la lista';
   }
-  if (draft.city.trim() && draft.city.trim().length > 80) {
-    errors.city = 'Máximo 80 caracteres';
+  if (draft.city.trim() && !isName(draft.city, 2, 80)) {
+    errors.city = 'Elige una ciudad de la lista';
   }
   return errors;
 }
@@ -65,11 +68,11 @@ export function validatePatient(draft: PatientDraft, today: Date = new Date()): 
   if (!DOCUMENT_NUMBER.test(draft.documentNumber.trim())) {
     errors.documentNumber = 'Debe tener de 5 a 20 letras o números, sin espacios';
   }
-  if (!length(draft.firstName, 2, 100)) {
-    errors.firstName = 'Los nombres son obligatorios (2 a 100 caracteres)';
+  if (!isName(draft.firstName, 2, 100)) {
+    errors.firstName = 'Solo letras, sin números ni caracteres especiales (2 a 100)';
   }
-  if (!length(draft.lastName, 2, 100)) {
-    errors.lastName = 'Los apellidos son obligatorios (2 a 100 caracteres)';
+  if (!isName(draft.lastName, 2, 100)) {
+    errors.lastName = 'Solo letras, sin números ni caracteres especiales (2 a 100)';
   }
   if (draft.birthDate) {
     const birth = new Date(`${draft.birthDate}T00:00:00`);
@@ -163,8 +166,8 @@ export function validateFormula(draft: FormulaDraft, today: Date = new Date()): 
   if (!draft.lensType) {
     errors.lensType = 'Elige el tipo de lente';
   }
-  if (!length(draft.optometristName, 3, 150)) {
-    errors.optometristName = 'Escribe el nombre del optómetra (3 a 150 caracteres)';
+  if (!isName(draft.optometristName, 3, 150)) {
+    errors.optometristName = 'Solo letras, sin números ni caracteres especiales (3 a 150)';
   }
   if (!draft.formulaDate) {
     errors.formulaDate = 'La fecha es obligatoria';
