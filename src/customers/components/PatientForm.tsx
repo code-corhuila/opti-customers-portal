@@ -3,6 +3,7 @@ import type { ShellContext } from '../../shell-contract';
 import { customersApi, type NewPatient } from '../api/customersApi';
 import { DOCUMENT_TYPES, type DocumentType } from '../model/patient';
 import { EMPTY_PATIENT, validatePatient, type PatientDraft } from '../model/validation';
+import { EpsCityFields } from './EpsCityFields';
 import { focusFirstInvalid, visibleErrors } from './forms';
 
 function toRequest(draft: PatientDraft): NewPatient {
@@ -58,15 +59,15 @@ export function PatientForm({ shell, onCreated }: { shell: ShellContext; onCreat
         <ui.TextField id="documentNumber" label="Número de documento" required value={draft.documentNumber}
           onChange={set('documentNumber')} error={errors.documentNumber} maxLength={20} autoComplete="off" />
         <ui.TextField id="firstName" label="Nombres" required value={draft.firstName} onChange={set('firstName')}
-          error={errors.firstName} maxLength={100} autoComplete="given-name" />
+          error={errors.firstName} maxLength={100} autoComplete="given-name" hint="Solo letras" />
         <ui.TextField id="lastName" label="Apellidos" required value={draft.lastName} onChange={set('lastName')}
-          error={errors.lastName} maxLength={100} autoComplete="family-name" />
+          error={errors.lastName} maxLength={100} autoComplete="family-name" hint="Solo letras" />
         <ui.TextField id="phone" label="Teléfono" required type="tel" inputMode="tel" value={draft.phone}
           onChange={set('phone')} error={errors.phone} maxLength={16} hint="Solo dígitos, con + opcional" autoComplete="tel" />
         <ui.TextField id="email" label="Correo electrónico" type="email" inputMode="email" value={draft.email}
           onChange={set('email')} error={errors.email} maxLength={160} autoComplete="email" />
-        <ui.TextField id="eps" label="EPS" required value={draft.eps} onChange={set('eps')} error={errors.eps} maxLength={80} />
-        <ui.TextField id="city" label="Ciudad" value={draft.city} onChange={set('city')} error={errors.city} maxLength={80} />
+        <EpsCityFields shell={shell} eps={draft.eps} city={draft.city} onEpsChange={set('eps')} onCityChange={set('city')}
+          epsError={errors.eps} cityError={errors.city} />
         <ui.TextField id="birthDate" label="Fecha de nacimiento" type="date" value={draft.birthDate}
           onChange={set('birthDate')} error={errors.birthDate} />
       </div>

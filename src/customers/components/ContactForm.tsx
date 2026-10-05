@@ -3,6 +3,7 @@ import type { ShellContext } from '../../shell-contract';
 import { customersApi } from '../api/customersApi';
 import type { Patient } from '../model/patient';
 import { validateContact } from '../model/validation';
+import { EpsCityFields } from './EpsCityFields';
 import { focusFirstInvalid, visibleErrors } from './forms';
 
 /** Updates the contact data of a patient. The document never changes. */
@@ -59,8 +60,8 @@ export function ContactForm({ shell, patient, onSaved }: { shell: ShellContext; 
           onChange={set('phone')} error={errors.phone} maxLength={16} />
         <ui.TextField id="contact-email" label="Correo electrónico" type="email" value={draft.email}
           onChange={set('email')} error={errors.email} maxLength={160} />
-        <ui.TextField id="contact-eps" label="EPS" required value={draft.eps} onChange={set('eps')} error={errors.eps} maxLength={80} />
-        <ui.TextField id="contact-city" label="Ciudad" value={draft.city} onChange={set('city')} error={errors.city} maxLength={80} />
+        <EpsCityFields shell={shell} eps={draft.eps} city={draft.city} onEpsChange={set('eps')} onCityChange={set('city')}
+          epsError={errors.eps} cityError={errors.city} />
       </div>
       <div className="actions">
         <button type="submit" className="btn" disabled={pending}>
