@@ -53,24 +53,37 @@ export function PatientForm({ shell, onCreated }: { shell: ShellContext; onCreat
           {error.userMessage}
         </ui.Banner>
       ) : null}
-      <div className="grid-2">
-        <ui.SelectField id="documentType" label="Tipo de documento" required value={draft.documentType}
-          onChange={(v) => set('documentType')(v as DocumentType)} options={DOCUMENT_TYPES} error={errors.documentType} />
-        <ui.TextField id="documentNumber" label="Número de documento" required value={draft.documentNumber}
-          onChange={set('documentNumber')} error={errors.documentNumber} maxLength={20} autoComplete="off" />
-        <ui.TextField id="firstName" label="Nombres" required value={draft.firstName} onChange={set('firstName')}
-          error={errors.firstName} maxLength={100} autoComplete="given-name" hint="Solo letras" />
-        <ui.TextField id="lastName" label="Apellidos" required value={draft.lastName} onChange={set('lastName')}
-          error={errors.lastName} maxLength={100} autoComplete="family-name" hint="Solo letras" />
-        <ui.TextField id="phone" label="Teléfono" required type="tel" inputMode="tel" value={draft.phone}
-          onChange={set('phone')} error={errors.phone} maxLength={16} hint="Solo dígitos, con + opcional" autoComplete="tel" />
-        <ui.TextField id="email" label="Correo electrónico" type="email" inputMode="email" value={draft.email}
-          onChange={set('email')} error={errors.email} maxLength={160} autoComplete="email" />
-        <EpsCityFields shell={shell} eps={draft.eps} city={draft.city} onEpsChange={set('eps')} onCityChange={set('city')}
-          epsError={errors.eps} cityError={errors.city} />
-        <ui.TextField id="birthDate" label="Fecha de nacimiento" type="date" value={draft.birthDate}
-          onChange={set('birthDate')} error={errors.birthDate} />
-      </div>
+      <fieldset className="card">
+        <legend>Información personal</legend>
+        <div className="grid-2">
+          <ui.SelectField id="documentType" label="Tipo de documento" required value={draft.documentType}
+            onChange={(v) => set('documentType')(v as DocumentType)} options={DOCUMENT_TYPES} error={errors.documentType} />
+          <ui.TextField id="documentNumber" label="Número de documento" required value={draft.documentNumber}
+            onChange={set('documentNumber')} error={errors.documentNumber} maxLength={20} autoComplete="off" />
+          <ui.TextField id="firstName" label="Nombres" required value={draft.firstName} onChange={set('firstName')}
+            error={errors.firstName} maxLength={100} autoComplete="given-name" hint="Solo letras" />
+          <ui.TextField id="lastName" label="Apellidos" required value={draft.lastName} onChange={set('lastName')}
+            error={errors.lastName} maxLength={100} autoComplete="family-name" hint="Solo letras" />
+          <ui.TextField id="birthDate" label="Fecha de nacimiento" type="date" value={draft.birthDate}
+            onChange={set('birthDate')} error={errors.birthDate} />
+        </div>
+      </fieldset>
+      <fieldset className="card">
+        <legend>Información de contacto</legend>
+        <div className="grid-2">
+          <ui.TextField id="phone" label="Teléfono" required type="tel" inputMode="tel" value={draft.phone}
+            onChange={set('phone')} error={errors.phone} maxLength={16} hint="Solo dígitos, con + opcional" autoComplete="tel" />
+          <ui.TextField id="email" label="Correo electrónico" type="email" inputMode="email" value={draft.email}
+            onChange={set('email')} error={errors.email} maxLength={160} autoComplete="email" />
+        </div>
+      </fieldset>
+      <fieldset className="card">
+        <legend>Información adicional</legend>
+        <div className="grid-2">
+          <EpsCityFields shell={shell} eps={draft.eps} city={draft.city} onEpsChange={set('eps')} onCityChange={set('city')}
+            epsError={errors.eps} cityError={errors.city} />
+        </div>
+      </fieldset>
       <div className="actions">
         <button type="submit" className="btn" disabled={pending}>
           {pending ? 'Guardando…' : 'Registrar paciente'}
