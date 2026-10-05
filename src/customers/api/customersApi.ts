@@ -28,6 +28,13 @@ export interface ContactChange {
   city: string | null;
 }
 
+/** Totals for the patients dashboard (HU-17). */
+export interface PatientSummary {
+  total: number;
+  active: number;
+  pendingControls: number;
+}
+
 export function customersApi(api: ApiClient) {
   return {
     list: (query: PatientQuery, signal?: AbortSignal) =>
@@ -38,6 +45,9 @@ export function customersApi(api: ApiClient) {
 
     get: (id: string, signal?: AbortSignal) =>
       api.get<Patient>(`/api/v1/patients/${id}`, signal ? { signal } : {}),
+
+    summary: (signal?: AbortSignal) =>
+      api.get<PatientSummary>('/api/v1/patients/summary', signal ? { signal } : {}),
 
     create: (body: NewPatient, idempotencyKey: string) =>
       api.post<{ id: string }>('/api/v1/patients', body, { idempotencyKey }),

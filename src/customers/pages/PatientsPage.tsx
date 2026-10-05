@@ -21,6 +21,7 @@ export function PatientsPage({ shell }: { shell: ShellContext }): ReactNode {
     (signal) => api.list({ q, status, page }, signal),
     [q, status, page],
   );
+  const { state: summaryState, reload: reloadSummary } = ui.useLoad((signal) => api.summary(signal), []);
 
   function update(next: Record<string, string>): void {
     const merged = new URLSearchParams(params);
@@ -47,6 +48,26 @@ export function PatientsPage({ shell }: { shell: ShellContext }): ReactNode {
           ) : null
         }
       />
+      <ui.DataState state={summaryState} onRetry={reloadSummary}>
+        {(summary) => (
+          <div className="summary-grid">
+            <div className="summary-card">
+              <h2>Total de pacientes</h2>
+              <div className="metric">{summary.total}</div>
+            </div>
+            <div className="summary-card">
+              <h2>Pacientes activos</h2>
+              <div className="metric">{summary.active}</div>
+            </div>
+            <div className="summary-card">
+              <h2>Controles pendientes</h2>
+              <div className={summary.pendingControls === 0 ? 'metric calm' : 'metric'}>
+                {summary.pendingControls}
+              </div>
+            </div>
+          </div>
+        )}
+      </ui.DataState>
       <div className="toolbar" role="search">
         <ui.TextField id="search" label="Buscar" type="search" value={text} placeholder="Documento o nombre"
           onChange={(value) => { setText(value); update({ page: '' }); }} maxLength={60} />
@@ -81,7 +102,10 @@ export function PatientsPage({ shell }: { shell: ShellContext }): ReactNode {
                         {patient.documentType} {patient.documentNumber}
                       </td>
                       <td>
-                        <Link to={patient.id}>{patient.fullName}</Link>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <ui.Avatar name={patient.firstName + ' ' + patient.lastName} />
+                          <Link to={patient.id}>{patient.fullName}</Link>
+                        </div>
                       </td>
                       <td>{patient.phone}</td>
                       <td>{patient.eps}</td>
