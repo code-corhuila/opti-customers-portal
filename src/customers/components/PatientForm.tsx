@@ -6,26 +6,23 @@ import { EMPTY_PATIENT, validatePatient, type PatientDraft } from '../model/vali
 import { EpsCityFields } from './EpsCityFields';
 import { focusFirstInvalid, visibleErrors } from './forms';
 
-/** Small colored icon badge for a form section heading, reusing the shared color tokens
- * (no local stylesheet in this portal, so styles are inline, same convention as HU-21/HU-22). */
-function SectionIcon({ path, tone }: { path: ReactNode; tone: 'primary' | 'success' | 'info' }): ReactNode {
-  const color = `var(--${tone})`;
-  return (
-    <span
-      style={{
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        width: '1.75rem', height: '1.75rem', borderRadius: '8px', marginRight: '0.5rem',
-        background: `color-mix(in srgb, ${color} 18%, transparent)`, color, verticalAlign: 'middle',
-      }}
-      aria-hidden="true"
-    >
-      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6"
-        strokeLinecap="round" strokeLinejoin="round">
-        {path}
-      </svg>
-    </span>
-  );
-}
+const PERSONAL_ICON = (
+  <>
+    <circle cx="10" cy="7" r="3" />
+    <path d="M4 17c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" />
+  </>
+);
+
+const CONTACT_ICON = (
+  <path d="M5 3.5h2.2l1 3.5-1.6 1.3a9 9 0 0 0 4.1 4.1l1.3-1.6 3.5 1v2.2a1.5 1.5 0 0 1-1.6 1.5A12.5 12.5 0 0 1 3.5 5.1 1.5 1.5 0 0 1 5 3.5Z" />
+);
+
+const ADDITIONAL_ICON = (
+  <>
+    <path d="M10 17.5s5.5-4.3 5.5-8.8A5.5 5.5 0 0 0 10 3.2a5.5 5.5 0 0 0-5.5 5.5c0 4.5 5.5 8.8 5.5 8.8Z" />
+    <circle cx="10" cy="8.7" r="1.8" />
+  </>
+);
 
 function toRequest(draft: PatientDraft): NewPatient {
   return {
@@ -74,14 +71,9 @@ export function PatientForm({ shell, onCreated }: { shell: ShellContext; onCreat
           {error.userMessage}
         </ui.Banner>
       ) : null}
-      <fieldset className="card">
-        <legend>
-          <SectionIcon tone="primary" path={<>
-            <circle cx="10" cy="7" r="3" />
-            <path d="M4 17c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" />
-          </>} />
-          Información personal
-        </legend>
+      <section className="card">
+        <ui.SectionHeading icon={PERSONAL_ICON} tone="primary" title="Información personal"
+          description="Datos básicos de identificación del paciente." />
         <div className="grid-2">
           <ui.SelectField id="documentType" label="Tipo de documento" required value={draft.documentType}
             onChange={(v) => set('documentType')(v as DocumentType)} options={DOCUMENT_TYPES} error={errors.documentType} />
@@ -94,34 +86,25 @@ export function PatientForm({ shell, onCreated }: { shell: ShellContext; onCreat
           <ui.TextField id="birthDate" label="Fecha de nacimiento" type="date" value={draft.birthDate}
             onChange={set('birthDate')} error={errors.birthDate} />
         </div>
-      </fieldset>
-      <fieldset className="card">
-        <legend>
-          <SectionIcon tone="success" path={
-            <path d="M5 3.5h2.2l1 3.5-1.6 1.3a9 9 0 0 0 4.1 4.1l1.3-1.6 3.5 1v2.2a1.5 1.5 0 0 1-1.6 1.5A12.5 12.5 0 0 1 3.5 5.1 1.5 1.5 0 0 1 5 3.5Z" />
-          } />
-          Información de contacto
-        </legend>
+      </section>
+      <section className="card">
+        <ui.SectionHeading icon={CONTACT_ICON} tone="success" title="Información de contacto"
+          description="Datos para facilitar la comunicación con el paciente." />
         <div className="grid-2">
           <ui.TextField id="phone" label="Teléfono" required type="tel" inputMode="tel" value={draft.phone}
             onChange={set('phone')} error={errors.phone} maxLength={16} hint="Solo dígitos, con + opcional" autoComplete="tel" />
           <ui.TextField id="email" label="Correo electrónico" type="email" inputMode="email" value={draft.email}
             onChange={set('email')} error={errors.email} maxLength={160} autoComplete="email" />
         </div>
-      </fieldset>
-      <fieldset className="card">
-        <legend>
-          <SectionIcon tone="info" path={<>
-            <path d="M10 17.5s5.5-4.3 5.5-8.8A5.5 5.5 0 0 0 10 3.2a5.5 5.5 0 0 0-5.5 5.5c0 4.5 5.5 8.8 5.5 8.8Z" />
-            <circle cx="10" cy="8.7" r="1.8" />
-          </>} />
-          Información adicional
-        </legend>
+      </section>
+      <section className="card">
+        <ui.SectionHeading icon={ADDITIONAL_ICON} tone="info" title="Información adicional"
+          description="Datos complementarios para su historial clínico." />
         <div className="grid-2">
           <EpsCityFields shell={shell} eps={draft.eps} city={draft.city} onEpsChange={set('eps')} onCityChange={set('city')}
             epsError={errors.eps} cityError={errors.city} />
         </div>
-      </fieldset>
+      </section>
       <div className="actions">
         <button type="submit" className="btn" disabled={pending}>
           {pending ? 'Guardando…' : 'Registrar paciente'}
