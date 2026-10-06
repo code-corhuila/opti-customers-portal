@@ -7,6 +7,24 @@ import { formatDate, STATUS_LABEL, type PatientStatus } from '../model/patient';
 
 const STATUS_OPTIONS = (Object.keys(STATUS_LABEL) as PatientStatus[]).map((value) => ({ value, label: STATUS_LABEL[value] }));
 
+const TOTAL_ICON = (
+  <>
+    <circle cx="7" cy="7" r="2.5" />
+    <path d="M2.5 16c0-2.5 2-4 5-4s5 1.5 5 4" />
+    <circle cx="14.5" cy="7.5" r="2" />
+    <path d="M13 12.2c1.9.3 3.5 1.5 3.5 3.8" />
+  </>
+);
+
+const ACTIVE_ICON = <path d="M4 10.5 8 14.5 16 5.5" />;
+
+const PENDING_ICON = (
+  <>
+    <rect x="4.5" y="3.5" width="11" height="14" rx="1.5" />
+    <path d="M7.5 3.5V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v.5M7 9h6M7 12.5h6M7 16h3.5" />
+  </>
+);
+
 /** Patient search (HU-03): by document or name, with the four states and bounded pages. */
 export function PatientsPage({ shell }: { shell: ShellContext }): ReactNode {
   const { ui } = shell;
@@ -51,20 +69,10 @@ export function PatientsPage({ shell }: { shell: ShellContext }): ReactNode {
       <ui.DataState state={summaryState} onRetry={reloadSummary}>
         {(summary) => (
           <div className="summary-grid">
-            <div className="summary-card">
-              <h2>Total de pacientes</h2>
-              <div className="metric">{summary.total}</div>
-            </div>
-            <div className="summary-card">
-              <h2>Pacientes activos</h2>
-              <div className="metric">{summary.active}</div>
-            </div>
-            <div className="summary-card">
-              <h2>Controles pendientes</h2>
-              <div className={summary.pendingControls === 0 ? 'metric calm' : 'metric'}>
-                {summary.pendingControls}
-              </div>
-            </div>
+            <ui.StatCard icon={TOTAL_ICON} tone="primary" label="Total de pacientes" value={summary.total} />
+            <ui.StatCard icon={ACTIVE_ICON} tone="success" label="Pacientes activos" value={summary.active} />
+            <ui.StatCard icon={PENDING_ICON} tone={summary.pendingControls === 0 ? 'success' : 'warning'}
+              label="Controles pendientes" value={summary.pendingControls} />
           </div>
         )}
       </ui.DataState>
