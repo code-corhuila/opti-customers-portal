@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import type { ShellContext } from '../../shell-contract';
 import { customersApi } from '../api/customersApi';
 import { ContactForm } from '../components/ContactForm';
@@ -68,11 +68,20 @@ function FormulaHistory({ shell, patientId, version }: { shell: ShellContext; pa
 export function PatientDetailPage({ shell }: { shell: ShellContext }): ReactNode {
   const { ui } = shell;
   const { id = '' } = useParams();
+  const [searchParams] = useSearchParams();
   const api = useMemo(() => customersApi(shell.api), [shell.api]);
   const [version, setVersion] = useState(0);
   const [editing, setEditing] = useState(false);
   const [addingFormula, setAddingFormula] = useState(false);
   const { state, reload } = ui.useLoad((signal) => api.get(id, signal), [id, version]);
+  const formulasRef = useRef<HTMLElement>(null);
+
+  /** Llegando desde Optometría (HU-23) con `?focus=formulas`: baja directo a esa sección. */
+  useEffect(() => {
+    if (searchParams.get('focus') === 'formulas' && state.status === 'ready') {
+      formulasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [searchParams, state.status]);
 
   return (
     <>
@@ -125,7 +134,7 @@ export function PatientDetailPage({ shell }: { shell: ShellContext }): ReactNode
               )}
             </section>
 
-            <section className="card" aria-labelledby="formulas">
+            <section className="card" aria-labelledby="formulas" ref={formulasRef}>
               <div className="page-header">
                 <h2 id="formulas">Fórmulas ópticas</h2>
                 {shell.can('ADMIN', 'OPTOMETRIST') && !addingFormula ? (
