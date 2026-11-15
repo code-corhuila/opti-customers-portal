@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import type { ShellContext } from '../../shell-contract';
 import { customersApi } from '../api/customersApi';
+import { DownloadButton } from '../components/DownloadButton';
 import { ContactForm } from '../components/ContactForm';
 import { FormulaForm } from '../components/FormulaForm';
 import { StatusBadge } from '../components/StatusBadge';
@@ -51,7 +52,8 @@ function FormulaHistory({ shell, patientId, version }: { shell: ShellContext; pa
                     <td className="num">{formula.pupillaryDistance}</td>
                     <td>{LENS_LABEL[formula.lensType] ?? formula.lensType}</td>
                     <td>{formula.optometristName}</td>
-                    <td>{formula.current ? <ui.Badge tone="success">Vigente</ui.Badge> : null}</td>
+                    <td>{formula.current ? <ui.Badge tone="success">Vigente</ui.Badge> : null}
+                      <DownloadButton shell={shell} path={`/api/v1/patients/${patientId}/formulas/${formula.id}/pdf`} filename={`formula-${formula.id}.pdf`} label="Descargar fórmula PDF" /></td>
                   </tr>
                 ))}
               </tbody>

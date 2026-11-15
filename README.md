@@ -23,3 +23,9 @@ branch into another: `merge develop -> qa` and `merge qa -> main` do not exist i
 rule.
 
 Full policy: `00-governance/branching-policy.md` in `library-docs`.
+
+## Fórmula óptica PDF
+
+Desde la ficha del paciente se descarga cada fórmula vigente o histórica mediante el endpoint autenticado de pacientes. La API aplica roles y pertenencia al paciente; la interfaz no construye enlaces públicos ni maneja credenciales. Requiere el contenedor `opti-front` con soporte `responseType: 'blob'` y el endpoint PDF de `opti-customers-api`.
+
+Verificación: `npm test`, `npm run build` y descarga desde ficha en Chromium con datos ficticios. La creación/consulta de fórmulas mantiene el flujo existente.
